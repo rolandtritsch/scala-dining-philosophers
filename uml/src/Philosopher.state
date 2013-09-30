@@ -1,0 +1,14 @@
+@startuml
+title DPP: Philosopher STD
+
+[*] --> Thinking: born
+Thinking --> Hungry: think
+Hungry --> DeniedAChopStick: pickUp(any)
+DeniedAChopStick --> Thinking: putDown(other)
+Hungry --> WaitingForOther: pickUp(first)
+Eating --> Thinking: done, putDown(both)
+WaitingForOther: --> Eating: pickUp(second)
+WaitingForOther: --> Thinking: putDown(first)
+Thinking --> [*]: die
+
+@enduml
