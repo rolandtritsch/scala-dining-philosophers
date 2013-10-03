@@ -9,7 +9,6 @@ object Build extends sbt.Build {
     version := "0.1",
     scalaVersion := "2.10.2",
     resolvers ++= Seq(
-//      Opts.resolver.sonatypeSnapshots,
       "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases"
     ),
     libraryDependencies ++= Seq(
@@ -23,5 +22,8 @@ object Build extends sbt.Build {
     )
   )
 
-  lazy val root = Project(id = "dpp", base = file("."))
+  lazy val root = Project(id = "dpp", base = file(".")).settings(
+    net.virtualvoid.sbt.graph.Plugin.graphSettings: _*
+  )
+
 }
