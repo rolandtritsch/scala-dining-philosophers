@@ -1,9 +1,10 @@
 @startuml
 title DPP: Fork STD
 
-[*] --> Available: create
-Available --> Taken: pickUp
-Taken --> Available: putDown
-Available --> [*]: delete
+[*] --> available: Create
+available --> taken: PickUp
+taken --> available: PutDown
+taken --> taken: PickUp
+available --> [*]: Delete
 
 @enduml

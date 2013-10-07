@@ -25,13 +25,15 @@ object Fork {
 }
 
 class Fork extends Actor with ActorLogging {
+  import context._
+
   import Fork._
   import Philosopher._
 
   def available: Receive = {
     case PickUp(byPhilosopher: ActorRef) => {
       log.debug(self.path + "/available: PickUp(%s)".format(byPhilosopher.path))
-      context.become(taken(byPhilosopher))
+      become(taken(byPhilosopher))
       byPhilosopher ! GotOne(self)
     }
   }
@@ -43,7 +45,7 @@ class Fork extends Actor with ActorLogging {
     }
     case PutDown(byPhilosopher) => {
       log.debug(self.path + "/taken: PutDown(%s)".format(byPhilosopher.path))
-      context.become(available)
+      become(available)
     }
   }
 
@@ -81,11 +83,11 @@ class Philosopher(name: String, rightFork: ActorRef, leftFork: ActorRef, thinkTi
   def hungry: Receive = {
     case GotOne(`leftFork`) => {
       log.debug(self.path + "/hungry: GotOne(left - %s)".format(leftFork.path))
-      become(waitingFor(rightFork, leftFork))
+      become(waitingForSecondFork(rightFork, leftFork))
     }
     case GotOne(`rightFork`) => {
       log.debug(self.path + "/hungry: GotOne(right - %s)".format(rightFork.path))
-      become(waitingFor(leftFork, rightFork))
+      become(waitingForSecondFork(leftFork, rightFork))
     }
     case NopeCantHaveIt(fork) => {
       log.debug(self.path + "/hungry: NopeCantHaveIt(%s)".format(fork.path))
@@ -93,15 +95,15 @@ class Philosopher(name: String, rightFork: ActorRef, leftFork: ActorRef, thinkTi
     }
   }
 
-  def waitingFor(needThisFork: ActorRef, gotThatFork: ActorRef): Receive = {
+  def waitingForSecondFork(needThisFork: ActorRef, gotThatFork: ActorRef): Receive = {
     case GotOne(`needThisFork`) => {
-      log.debug(self.path + "/waitingFor: GotOne(%s)".format(needThisFork.path))
+      log.debug(self.path + "/waitingForSecondFork: GotOne(%s)".format(needThisFork.path))
       log.info("%s has picked up %s and %s and starts to eat ...".format(name, leftFork.path.name, rightFork.path.name))
       become(eating)
       system.scheduler.scheduleOnce(eatTime seconds, self, ThanksIAmStuffedNow)
     }
     case NopeCantHaveIt(fork) => {
-      log.debug(self.path + "/waitingFor: NopeCantHaveIt(%s)".format(fork.path))
+      log.debug(self.path + "/waitingForSecondFork: NopeCantHaveIt(%s)".format(fork.path))
       become(thinking)
       gotThatFork ! PutDown(self)
       self ! FeelingHungryAgain
