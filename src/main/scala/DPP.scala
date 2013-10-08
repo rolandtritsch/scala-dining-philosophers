@@ -91,7 +91,7 @@ class Philosopher(name: String, rightFork: ActorRef, leftFork: ActorRef, thinkTi
     }
     case NopeCantHaveIt(fork) => {
       log.debug(self.path + "/hungry: NopeCantHaveIt(%s)".format(fork.path))
-      become(deadlocked)
+      become(notEvenGotTheFirstFork)
     }
   }
 
@@ -110,15 +110,15 @@ class Philosopher(name: String, rightFork: ActorRef, leftFork: ActorRef, thinkTi
     }
   }
 
-  def deadlocked: Receive = {
+  def notEvenGotTheFirstFork: Receive = {
     case GotOne(fork) => {
-      log.debug(self.path + "/deadlocked: GotOne(%s)".format(fork.path))
+      log.debug(self.path + "/notEvenGotTheFirstFork: GotOne(%s)".format(fork.path))
       become(thinking)
       fork ! PutDown(self)
       self ! FeelingHungryAgain
     }
     case NopeCantHaveIt(fork) => {
-      log.debug(self.path + "/deadlocked: NopeCantHaveIt(%s)".format(fork.path))
+      log.debug(self.path + "/notEvenGotTheFirstFork: NopeCantHaveIt(%s)".format(fork.path))
       become(thinking)
       self ! FeelingHungryAgain
     }

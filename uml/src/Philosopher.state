@@ -4,12 +4,12 @@ title DPP: Philosopher STD
 [*] --> thinking: ToBeOrNotToBe
 thinking --> hungry: FeelingHungryAgain
 hungry --> waitingForSecondFork: GotOne
-hungry --> deadlocked: NopeCantHaveIt
+hungry --> notEvenGotTheFirstFork: NopeCantHaveIt
 waitingForSecondFork --> eating: GotOne
 waitingForSecondFork --> thinking: NopeCantHaveIt
 eating --> thinking: ThanksIAmStuffedNow
-deadlocked --> thinking: GotOne
-deadlocked --> thinking: NopeCantHaveIt
+notEvenGotTheFirstFork --> thinking: GotOne
+notEvenGotTheFirstFork --> thinking: NopeCantHaveIt
 thinking --> [*]: Die
 
 @enduml
